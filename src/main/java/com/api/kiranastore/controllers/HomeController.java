@@ -3,7 +3,7 @@ package com.api.kiranastore.controllers;
 import com.api.kiranastore.dto.AuthRequest;
 import com.api.kiranastore.dto.SignupRequest;
 import com.api.kiranastore.services.JwtService;
-import com.api.kiranastore.services.UsersService;
+import com.api.kiranastore.services.users.UsersServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,14 +11,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/home")
+@RequestMapping("/api/home")
 public class HomeController {
 
-    private final UsersService usersService;
+    private final UsersServiceImpl usersService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    HomeController(UsersService usersService, JwtService jwtService, AuthenticationManager authenticationManager) {
+    HomeController(UsersServiceImpl usersService, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.usersService = usersService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
@@ -30,13 +30,13 @@ public class HomeController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> addNewUser(@RequestBody SignupRequest signupRequest){
+    public ResponseEntity<String> addNewUser(@RequestBody SignupRequest signupRequest){
         usersService.signUpUser(signupRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Successfully created your profile");
     }
 
-    @PostMapping("/authenticate")
-    public String authenticationAndGetToken(@RequestBody AuthRequest authRequest) {
+    @PostMapping("/login")
+    public ResponseEntity<String> authenticationAndGetToken(@RequestBody AuthRequest authRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -46,7 +46,8 @@ public class HomeController {
         );
 
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
+            String jwtToken = jwtService.generateToken(authRequest.getUsername());
+            return ResponseEntity.ok(jwtToken);
         } else {
             throw new RuntimeException("Authentication failed");
         }

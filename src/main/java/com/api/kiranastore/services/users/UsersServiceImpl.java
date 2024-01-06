@@ -1,4 +1,4 @@
-package com.api.kiranastore.services;
+package com.api.kiranastore.services.users;
 
 import com.api.kiranastore.dto.SignupRequest;
 import com.api.kiranastore.entities.Users;
@@ -7,31 +7,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class UsersService {
+public class UsersServiceImpl implements UsersService{
 
     private final UsersRepo usersRepo;
     private final PasswordEncoder passwordEncoder;
 
-    UsersService(UsersRepo usersRepo, PasswordEncoder passwordEncoder){
+    public UsersServiceImpl(UsersRepo usersRepo, PasswordEncoder passwordEncoder) {
         this.usersRepo = usersRepo;
         this.passwordEncoder = passwordEncoder;
     }
 
-    /** Add new user through admin
-     * @param users - user complete info
-     */
-    public void addUser(Users users){
+    @Override
+    public void addUser(Users users) {
         users.setPassword(passwordEncoder.encode(users.getPassword()));
         usersRepo.save(users);
     }
 
-    /**
-     * Add new user through signup
-     * @param signupRequest - DTO which contains only username,password and country
-     */
-    public void signUpUser(SignupRequest signupRequest){
+    @Override
+    public void signUpUser(SignupRequest signupRequest) {
         Users user = new Users();
         user.setUsername(signupRequest.getUsername());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
@@ -40,11 +36,17 @@ public class UsersService {
         usersRepo.save(user);
     }
 
-    /** List of all the users
-     * @return all the users
-     */
-    public List<Users> getAllUsers(){
+    @Override
+    public List<Users> getAllUsers() {
         return usersRepo.findAll();
     }
+
+    @Override
+    public void updatePassword(String userName,String newPassword) {
+        Users user = usersRepo.findByUsername(userName);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        usersRepo.save(user);
+    }
+
 
 }

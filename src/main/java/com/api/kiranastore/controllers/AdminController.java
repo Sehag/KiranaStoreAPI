@@ -1,7 +1,7 @@
 package com.api.kiranastore.controllers;
 
 import com.api.kiranastore.entities.Users;
-import com.api.kiranastore.services.UsersService;
+import com.api.kiranastore.services.users.UsersServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
-    private final UsersService usersService;
+    private final UsersServiceImpl usersService;
 
-    AdminController(UsersService usersService){
+    AdminController(UsersServiceImpl usersService){
         this.usersService = usersService;
     }
 
@@ -25,9 +25,9 @@ public class AdminController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> addNewUser(@RequestBody Users user){
+    public ResponseEntity<String> addNewUser(@RequestBody Users user){
         usersService.addUser(user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Successfully added the new user");
     }
 
     @GetMapping("/users")
