@@ -1,7 +1,7 @@
 package com.api.kiranastore.controllers;
 
 import com.api.kiranastore.entities.Transactions;
-import com.api.kiranastore.services.UserService;
+import com.api.kiranastore.services.TransactionServices;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 @PreAuthorize("hasAuthority('USER')")
 public class UserController {
-    public UserService empService;
+    private final TransactionServices transactionServices;
 
-    UserController(UserService userService){
-        this.empService = userService;
+    UserController(TransactionServices transactionServices){
+        this.transactionServices = transactionServices;
     }
 
     @GetMapping()
@@ -22,7 +22,7 @@ public class UserController {
     }
     @PostMapping("/send")
     public ResponseEntity<Void> send_trans(@RequestBody Transactions trans){
-        empService.addTrans(trans);
+        transactionServices.addTrans(trans);
         return ResponseEntity.ok().build();
     }
 }

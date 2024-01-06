@@ -1,8 +1,7 @@
 package com.api.kiranastore.controllers;
 
-import com.api.kiranastore.entities.Transactions;
 import com.api.kiranastore.entities.Users;
-import com.api.kiranastore.services.AdminService;
+import com.api.kiranastore.services.UsersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,31 +13,27 @@ import java.util.List;
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
-    public AdminService adminService;
+    private final UsersService usersService;
 
-    AdminController(AdminService adminService){
-        this.adminService = adminService;
+    AdminController(UsersService usersService){
+        this.usersService = usersService;
     }
 
     @GetMapping()
-    public String welcome(){
-        return "Welcome Admin";
+    public ResponseEntity<String> welcome(){
+        return ResponseEntity.ok().body("Hello admin");
     }
 
     @PostMapping("/create")
     public ResponseEntity<Void> addNewUser(@RequestBody Users user){
-        adminService.addUser(user);
+        usersService.addUser(user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<Users>> findAllUsers(){
-        return ResponseEntity.ok(adminService.getAllUsers());
+        return ResponseEntity.ok(usersService.getAllUsers());
     }
 
-    @GetMapping("/trans")
-    public ResponseEntity<List<Transactions>> getTransactions(){
-        return ResponseEntity.ok(adminService.getAllTrans());
-    }
 
 }

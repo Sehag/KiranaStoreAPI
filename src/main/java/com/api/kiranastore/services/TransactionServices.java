@@ -5,11 +5,11 @@ import com.api.kiranastore.repo.TransactionsRepo;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class TransactionServices {
 
-    public TransactionsRepo transactionsRepo;
+    private final TransactionsRepo transactionsRepo;
 
-    UserService(TransactionsRepo transactionsRepo){
+    public TransactionServices(TransactionsRepo transactionsRepo) {
         this.transactionsRepo = transactionsRepo;
     }
 
