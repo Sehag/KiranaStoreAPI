@@ -1,13 +1,14 @@
 package com.api.kiranastore.controllers;
 
-import com.api.kiranastore.dto.AuthRequest;
-import com.api.kiranastore.dto.SignupRequest;
-import com.api.kiranastore.services.JwtService;
+import com.api.kiranastore.models.auth.AuthResponse;
+import com.api.kiranastore.models.auth.AuthRequest;
+import com.api.kiranastore.models.signUp.SignUpResponse;
+import com.api.kiranastore.models.signUp.SignupRequest;
+import com.api.kiranastore.response.WelcomeResponse;
+import com.api.kiranastore.services.apiRateLimit.RateLimitServiceImpl;
+import com.api.kiranastore.services.auth.AuthServiceImpl;
 import com.api.kiranastore.services.users.UsersServiceImpl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,42 +16,34 @@ import org.springframework.web.bind.annotation.*;
 public class HomeController {
 
     private final UsersServiceImpl usersService;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final AuthServiceImpl authService;
+    private final RateLimitServiceImpl rateLimitService;
 
-    HomeController(UsersServiceImpl usersService, JwtService jwtService, AuthenticationManager authenticationManager) {
+    HomeController(UsersServiceImpl usersService, AuthServiceImpl authService, RateLimitServiceImpl rateLimitService) {
         this.usersService = usersService;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
-
-    @GetMapping()
-    public String welcome(){
-        return "Hi";
+        this.authService = authService;
+        this.rateLimitService = rateLimitService;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> addNewUser(@RequestBody SignupRequest signupRequest){
-        usersService.signUpUser(signupRequest);
-        return ResponseEntity.ok("Successfully created your profile");
+    public ResponseEntity<SignUpResponse> addNewUser(@RequestBody SignupRequest signupRequest){
+        SignUpResponse signUpResponse = usersService.signUpUser(signupRequest);
+        return ResponseEntity.ok(signUpResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticationAndGetToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponse> authenticationAndGetToken(@RequestBody AuthRequest authRequest) {
+        AuthResponse authResponse = authService.authenticate(authRequest);
+        return ResponseEntity.ok(authResponse);
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequest.getUsername(),
-                        authRequest.getPassword()
-                )
-        );
-
-        if (authentication.isAuthenticated()) {
-            String jwtToken = jwtService.generateToken(authRequest.getUsername());
-            return ResponseEntity.ok(jwtToken);
+        /*
+        Bucket bucket = rateLimitService.resolveBucket("Hello");
+        if (bucket.tryConsume(1)) {
+            return ResponseEntity.ok(welcome.getHello());
         } else {
-            throw new RuntimeException("Authentication failed");
+            return ResponseEntity.status(429).body("Rate limit exceeded for user ");
         }
+         */
     }
 
 }

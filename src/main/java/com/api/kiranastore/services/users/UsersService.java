@@ -1,6 +1,7 @@
 package com.api.kiranastore.services.users;
 
-import com.api.kiranastore.dto.SignupRequest;
+import com.api.kiranastore.models.signUp.SignUpResponse;
+import com.api.kiranastore.models.signUp.SignupRequest;
 import com.api.kiranastore.entities.Users;
 
 import java.util.List;
@@ -8,16 +9,18 @@ import java.util.List;
 public interface UsersService {
 
     /**
-     * Add new user through admin
-     * @param users user complete info
+     * Add new user to the database
+     * @param users new user details
+     * @return status of creation of the new user
      */
-    public void addUser(Users users);
+    public SignUpResponse addUser(Users users);
 
     /**
-     * Add new user through signup
-     * @param signupRequest  DTO which contains only username,password and country
+     * Add new user to the database
+     * @param signupRequest Consists of the new user details
+     * @return status of the creation of the new user
      */
-    public void signUpUser(SignupRequest signupRequest);
+    public SignUpResponse signUpUser(SignupRequest signupRequest);
 
     /**
      * List of all the users
@@ -26,8 +29,23 @@ public interface UsersService {
     public List<Users> getAllUsers();
 
     /**
-     * Update user's password
+     * Updates user's password
      * @param newPassword New password which the user wishes to change to
      */
-    public void updatePassword(String userName,String newPassword);
+    public void updatePassword(String token,String newPassword);
+
+    /**
+     * Updates user's username
+     * @param userName Current username
+     * @param newUserName new username
+     */
+    public void updateUserName(String token, String newUserName);
+
+    /**
+     * Updates user's country
+     * @param userName username
+     * @param newCountry new country
+     */
+    void updateCountry(String token, String newCountry);
+
 }

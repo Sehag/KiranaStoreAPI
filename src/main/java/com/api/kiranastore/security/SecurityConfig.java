@@ -1,7 +1,6 @@
 package com.api.kiranastore.security;
 
 
-import com.api.kiranastore.filter.JwtAuthFilter;
 import com.api.kiranastore.repo.UsersRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,11 +25,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
     private final UsersRepo usersRepo;
-    private final JwtAuthFilter jwtAuthFilter;
+    private final AuthFilter authFilter;
 
-    SecurityConfig(UsersRepo usersRepo, JwtAuthFilter jwtAuthFilter){
+    SecurityConfig(UsersRepo usersRepo, AuthFilter authFilter){
         this.usersRepo = usersRepo;
-        this.jwtAuthFilter = jwtAuthFilter;
+        this.authFilter = authFilter;
     }
 
     @Bean
@@ -52,16 +51,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("api/home/**").permitAll()
+                        .requestMatchers("api/home/**","api/user/**","api/test/**").permitAll()
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/admin/**","api/user/**").authenticated()
+                        .requestMatchers("api/admin/**").authenticated()
                 )
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
     @Bean

@@ -1,4 +1,4 @@
-package com.api.kiranastore.dto;
+package com.api.kiranastore.models.signUp;
 
 import lombok.Data;
 

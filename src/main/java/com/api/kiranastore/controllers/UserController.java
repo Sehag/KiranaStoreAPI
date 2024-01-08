@@ -1,37 +1,55 @@
 package com.api.kiranastore.controllers;
 
-import com.api.kiranastore.entities.Transactions;
-import com.api.kiranastore.services.JwtService;
-import com.api.kiranastore.services.TransactionServices;
+import com.api.kiranastore.models.transactions.TransactionResponse;
+import com.api.kiranastore.requests.PaymentRequest;
+import com.api.kiranastore.response.WelcomeResponse;
+import com.api.kiranastore.security.TokenUtils;
+import com.api.kiranastore.services.transactions.TransactionServices;
 import com.api.kiranastore.services.users.UsersServiceImpl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
-@PreAuthorize("hasAuthority('USER')")
+//@PreAuthorize("hasAuthority('USER')")
 public class UserController {
-    private final TransactionServices transactionServices;
-    private final JwtService jwtService;
+    private final TokenUtils tokenUtils;
     private final UsersServiceImpl usersService;
+    private final TransactionServices transService;
 
-    UserController(TransactionServices transactionServices, JwtService jwtService, UsersServiceImpl usersService){
-        this.transactionServices = transactionServices;
-        this.jwtService = jwtService;
+    UserController(TokenUtils tokenUtils, UsersServiceImpl usersService, TransactionServices transService){
+        this.tokenUtils = tokenUtils;
         this.usersService = usersService;
+        this.transService = transService;
     }
 
     @GetMapping()
-    public String welcomeUser(){
-        return "Welcome User";
+    public ResponseEntity<String> welcomeUser(){
+        WelcomeResponse welcome = new WelcomeResponse();
+        return ResponseEntity.ok(welcome.getHello()+" user");
     }
 
-
-    @PostMapping("/updatePassword")
+    @PutMapping("/updatePassword")
     public ResponseEntity<String> updatePassword(@RequestBody String newPassword, @RequestHeader("Authorization") String jwtToken){
-        String userName = jwtService.extractUsername(jwtToken.substring(7));
-        usersService.updatePassword(userName,newPassword);
+        usersService.updatePassword(jwtToken,newPassword);
         return ResponseEntity.ok().body("Password changed successfully");
+    }
+
+    @PutMapping("/updateUserName")
+    public ResponseEntity<String> updateUserName(@RequestBody String newUserName, @RequestHeader("Authorization") String jwtToken){
+        usersService.updateUserName(jwtToken,newUserName);
+        return ResponseEntity.ok().body("Username changed successfully");
+    }
+
+    @PutMapping("/updateCountry")
+    public ResponseEntity<String> updateCountry(@RequestBody String newCountry, @RequestHeader("Authorization") String jwtToken){
+        usersService.updateCountry(jwtToken,newCountry);
+        return ResponseEntity.ok().body("Country changed successfully");
+    }
+
+    @PostMapping("/makePayment")
+    public ResponseEntity<TransactionResponse> makePayment(@RequestBody PaymentRequest payReq, @RequestHeader("Authorization") String jwtToken){
+        TransactionResponse transResponse = transService.makePayment(jwtToken,payReq.getAmount());
+        return ResponseEntity.ok().body(transResponse);
     }
 }

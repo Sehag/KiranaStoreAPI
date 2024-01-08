@@ -1,6 +1,8 @@
 package com.api.kiranastore.controllers;
 
 import com.api.kiranastore.entities.Users;
+import com.api.kiranastore.models.signUp.SignUpResponse;
+import com.api.kiranastore.response.WelcomeResponse;
 import com.api.kiranastore.services.users.UsersServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,15 +21,10 @@ public class AdminController {
         this.usersService = usersService;
     }
 
-    @GetMapping()
-    public ResponseEntity<String> welcome(){
-        return ResponseEntity.ok().body("Hello admin");
-    }
-
     @PostMapping("/create")
-    public ResponseEntity<String> addNewUser(@RequestBody Users user){
-        usersService.addUser(user);
-        return ResponseEntity.ok("Successfully added the new user");
+    public ResponseEntity<SignUpResponse> addNewUser(@RequestBody Users user){
+        SignUpResponse signUpResponse = usersService.addUser(user);
+        return ResponseEntity.ok(signUpResponse);
     }
 
     @GetMapping("/users")
