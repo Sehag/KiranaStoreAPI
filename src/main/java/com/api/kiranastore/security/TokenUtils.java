@@ -1,5 +1,6 @@
 package com.api.kiranastore.security;
 
+import com.api.kiranastore.exception.TokenException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,7 +22,7 @@ public class TokenUtils {
     @Value("${jwt.secret}")
     private String SECRET;
 
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -47,9 +48,13 @@ public class TokenUtils {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token) {
+        final String id = extractUserId(token);
+        if (!isTokenExpired(token)){
+            return true;
+        } else {
+            throw new TokenException("Invalid token", "Token Expired", "401");
+        }
     }
 
     public String generateToken(String id) {

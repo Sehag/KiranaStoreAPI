@@ -1,5 +1,7 @@
 package com.api.kiranastore.services.users;
 
+import com.api.kiranastore.enums.Roles;
+import com.api.kiranastore.enums.Currency;
 import com.api.kiranastore.models.signUp.SignUpResponse;
 import com.api.kiranastore.models.signUp.SignupRequest;
 import com.api.kiranastore.entities.Users;
@@ -42,10 +44,11 @@ public class UsersServiceImpl implements UsersService{
             signUpResponse.setSuccess(false);
             signUpResponse.setMessage("UserName taken");
         } else {
+            List<Roles> role = List.of(Roles.USER);
             user.setUsername(signupRequest.getUsername());
             user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-            user.setCountry(signupRequest.getCountry());
-            user.setRoles("USER");
+            user.setCurrency(signupRequest.getCurrency());
+            user.setRoles(role);
             usersRepo.save(user);
             signUpResponse.setSuccess(true);
             signUpResponse.setMessage("User created");
@@ -61,8 +64,8 @@ public class UsersServiceImpl implements UsersService{
 
     @Override
     public void updatePassword(String token,String newPassword) {
-        String userName = tokenUtils.extractUsername(token.substring(7));
-        Optional<Users> user = usersRepo.findByUsername(userName);
+        String userId = tokenUtils.extractUserId(token.substring(7));
+        Optional<Users> user = usersRepo.findById(userId);
         if(user.isPresent()) {
             user.get().setPassword(passwordEncoder.encode(newPassword));
             usersRepo.save(user.get());
@@ -70,8 +73,8 @@ public class UsersServiceImpl implements UsersService{
     }
 
     public void updateUserName(String token, String newUserName) {
-        String userName = tokenUtils.extractUsername(token.substring(7));
-        Optional<Users> user = usersRepo.findByUsername(userName);
+        String userId = tokenUtils.extractUserId(token.substring(7));
+        Optional<Users> user = usersRepo.findById(userId);
         if(user.isPresent()){
             user.get().setUsername(newUserName);
             usersRepo.save(user.get());
@@ -79,12 +82,13 @@ public class UsersServiceImpl implements UsersService{
     }
 
     @Override
-    public void updateCountry(String token, String newCountry) {
-        String userName = tokenUtils.extractUsername(token.substring(7));
-        Optional<Users> user = usersRepo.findByUsername(userName);
+    public void updateCurrency(String token, Currency currency) {
+        String userId = tokenUtils.extractUserId(token.substring(7));
+        Optional<Users> user = usersRepo.findById(userId);
         if(user.isPresent()) {
-            user.get().setCountry(newCountry);
+            user.get().setCurrency(currency);
             usersRepo.save(user.get());
         }
     }
+
 }

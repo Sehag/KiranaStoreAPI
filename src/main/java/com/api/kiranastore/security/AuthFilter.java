@@ -31,20 +31,18 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String token = null;
-        String username = null;
+        String id = null;
         try{
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 token = authHeader.substring(7);
-                username = tokenUtils.extractUsername(token);
+                id = tokenUtils.extractUserId(token);
+            } else {
+                throw new TokenException("No token", "Token Not found in Header", "401");
             }
 
-            if(StringUtil.isBlank(token)){
-                throw new TokenException("No token", "Token Not found in Header", "403");
-            }
-
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userInfoService.loadUserByUsername(username);
-                if (tokenUtils.validateToken(token, userDetails)) {
+            if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userInfoService.loadUserByUsername(id);
+                if (tokenUtils.validateToken(token)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);

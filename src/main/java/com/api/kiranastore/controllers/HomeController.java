@@ -4,12 +4,15 @@ import com.api.kiranastore.models.auth.AuthResponse;
 import com.api.kiranastore.models.auth.AuthRequest;
 import com.api.kiranastore.models.signUp.SignUpResponse;
 import com.api.kiranastore.models.signUp.SignupRequest;
-import com.api.kiranastore.response.WelcomeResponse;
-import com.api.kiranastore.services.apiRateLimit.RateLimitServiceImpl;
 import com.api.kiranastore.services.auth.AuthServiceImpl;
 import com.api.kiranastore.services.users.UsersServiceImpl;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/home")
@@ -17,12 +20,10 @@ public class HomeController {
 
     private final UsersServiceImpl usersService;
     private final AuthServiceImpl authService;
-    private final RateLimitServiceImpl rateLimitService;
 
-    HomeController(UsersServiceImpl usersService, AuthServiceImpl authService, RateLimitServiceImpl rateLimitService) {
+    HomeController(UsersServiceImpl usersService, AuthServiceImpl authService) {
         this.usersService = usersService;
         this.authService = authService;
-        this.rateLimitService = rateLimitService;
     }
 
     @PostMapping("/signup")
@@ -33,17 +34,22 @@ public class HomeController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticationAndGetToken(@RequestBody AuthRequest authRequest) {
-        AuthResponse authResponse = authService.authenticate(authRequest);
-        return ResponseEntity.ok(authResponse);
+        AuthResponse authResponse;
+        authResponse = authService.authenticate(authRequest);
 
         /*
-        Bucket bucket = rateLimitService.resolveBucket("Hello");
+        Bucket bucket = rateLimitService.resolveBucket("USER");
         if (bucket.tryConsume(1)) {
-            return ResponseEntity.ok(welcome.getHello());
+            authResponse = authService.authenticate(authRequest);
+
         } else {
-            return ResponseEntity.status(429).body("Rate limit exceeded for user ");
+            authResponse = new AuthResponse(false,null,"429","Too many requests","Login failed");
         }
+
          */
+
+        return ResponseEntity.ok(authResponse);
     }
+
 
 }

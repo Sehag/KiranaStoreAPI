@@ -29,6 +29,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
     implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.17.7'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.4.3'
     implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.6.0'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

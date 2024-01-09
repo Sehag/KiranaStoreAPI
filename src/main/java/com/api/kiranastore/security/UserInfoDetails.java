@@ -12,18 +12,15 @@ import java.util.stream.Collectors;
 
 public class UserInfoDetails implements UserDetails {
 
-    private final String name;
-    private final String pwd;
+    private final String userId;
     private final List<GrantedAuthority> role;
 
     UserInfoDetails(Users users){
-        this.name = users.getUsername();
-        this.pwd = users.getPassword();
-        this.role = Arrays.stream(users.getRoles().split(","))
-                .map(SimpleGrantedAuthority::new)
+        this.userId = users.getId();
+        this.role = users.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.toString()))
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -32,12 +29,12 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return pwd;
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return name;
+        return userId;
     }
 
     @Override

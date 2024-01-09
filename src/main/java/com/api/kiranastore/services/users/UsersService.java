@@ -1,8 +1,10 @@
 package com.api.kiranastore.services.users;
 
+import com.api.kiranastore.enums.Currency;
 import com.api.kiranastore.models.signUp.SignUpResponse;
 import com.api.kiranastore.models.signUp.SignupRequest;
 import com.api.kiranastore.entities.Users;
+
 
 import java.util.List;
 
@@ -46,6 +48,5 @@ public interface UsersService {
      * @param userName username
      * @param newCountry new country
      */
-    void updateCountry(String token, String newCountry);
-
+    void updateCurrency(String token,Currency currency);
 }

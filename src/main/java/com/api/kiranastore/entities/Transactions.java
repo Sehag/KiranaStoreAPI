@@ -1,5 +1,6 @@
 package com.api.kiranastore.entities;
 
+import com.api.kiranastore.enums.Currency;
 import com.api.kiranastore.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,8 +15,8 @@ public class Transactions {
 
     @Id private String id;
     private String userName;
-    private String transType;
+    private TransactionType transType;
     private double amount;
     private LocalDateTime transTime;
-    private String currency;
+    private Currency currency;
 }

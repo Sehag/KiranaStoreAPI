@@ -13,9 +13,8 @@ public class ApiResponse {
     private Object data;
     private Object view;
     private String status;
-    private String error;
-    private Object errorMessage;
-    private String errorCode;
+    private Object message;
+    private String httpStatusCode;
     private String displayMsg;
 
 }

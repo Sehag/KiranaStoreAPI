@@ -1,41 +1,54 @@
 package com.api.kiranastore.config;
 
+import com.giffing.bucket4j.spring.boot.starter.config.cache.CacheResolver;
 import com.giffing.bucket4j.spring.boot.starter.config.cache.SyncCacheResolver;
 import com.giffing.bucket4j.spring.boot.starter.config.cache.jcache.JCacheCacheResolver;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.grid.jcache.JCacheProxyManager;
 import org.redisson.config.Config;
 import org.redisson.jcache.configuration.RedissonConfiguration;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
-import org.springframework.cache.annotation.EnableCaching;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
+
 /*
 @Configuration
-public class RedisConfig{
+public class RedisConfig {
 
     @Bean
-    public Config config(){
+    public Config config() {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://localhost:6379");
+        config.useSingleServer()
+                .setAddress("redis://localhost:6379");
         return config;
     }
 
     @Bean
-    public CacheManager cacheManager(Config config){
+    public CacheManager cacheManager(Config config) {
         CacheManager manager = Caching.getCachingProvider().getCacheManager();
         manager.createCache("cache", RedissonConfiguration.fromConfig(config));
         return manager;
     }
 
     @Bean
-    ProxyManager<String> proxyManager(CacheManager cacheManager){
+    ProxyManager<String> proxyManager(CacheManager cacheManager) {
         return new JCacheProxyManager<>(cacheManager.getCache("cache"));
     }
+
+    @Bean
+    @Primary
+    public SyncCacheResolver bucket4jCacheResolver(CacheManager cacheManager) {
+        return new JCacheCacheResolver(cacheManager);
+    }
 }
-*/
+
+ */
+
+
+
+
 

@@ -2,6 +2,8 @@ package com.api.kiranastore.services.transactions;
 
 import com.api.kiranastore.entities.Transactions;
 import com.api.kiranastore.entities.Users;
+import com.api.kiranastore.enums.Currency;
+import com.api.kiranastore.enums.TransactionType;
 import com.api.kiranastore.models.transactions.TransactionResponse;
 import com.api.kiranastore.repo.TransactionsRepo;
 import com.api.kiranastore.repo.UsersRepo;
@@ -33,11 +35,12 @@ public class TransactionServices {
      * @param amount amount of transaction
      */
     public TransactionResponse makePayment(String token, double amount){
-        String username = tokenUtils.extractUsername(token.substring(7));
+        String userId = tokenUtils.extractUserId(token.substring(7));
         TransactionResponse transResponse = new TransactionResponse();
-        Optional<Users> user = usersRepo.findByUsername(username);
+        Optional<Users> user = usersRepo.findById(userId);
         if(user.isPresent()){
-            String currency = user.get().getCountry();
+            Currency currency = user.get().getCurrency();
+            String username = user.get().getUsername();
             double exchangeRate = exchangeServices.getExchangeRateForCurrency(currency);
             double convertedAmount = amount/exchangeRate;
             Transactions savedTrans = transactionsRepo.save(setTransactions(username,convertedAmount,currency));
@@ -45,17 +48,17 @@ public class TransactionServices {
             transResponse.setTransId(savedTrans.getId());
             transResponse.setMessage("Transaction successful");
         } else {
-            // handle exception
+            transResponse.setMessage("Transaction failed");
         }
         return transResponse;
     }
 
-    private Transactions setTransactions(String userName ,double amount,String currency){
+    private Transactions setTransactions(String userName ,double amount,Currency currency){
         Transactions transactions = new Transactions();
         transactions.setAmount(amount);
         transactions.setUserName(userName);
         transactions.setTransTime(LocalDateTime.now());
-        transactions.setTransType("CREDIT");
+        transactions.setTransType(TransactionType.CREDIT);
         transactions.setCurrency(currency);
         return transactions;
     }

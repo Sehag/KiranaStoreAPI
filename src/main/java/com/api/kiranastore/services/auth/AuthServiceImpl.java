@@ -27,23 +27,16 @@ public class AuthServiceImpl implements AuthService{
     public AuthResponse authenticate(AuthRequest authRequest) {
         String username = authRequest.getUsername();
         String password = authRequest.getPassword();
-        AuthResponse authResponse = new AuthResponse();
+        AuthResponse authResponse;
 
         Optional<Users> user = usersRepo.findByUsername(username);
 
-        if (user.isEmpty()) {
-            authResponse.setSuccess(false);
-            authResponse.setMessage("UserName not found");
-        } else if (passwordEncoder.matches(password, user.get().getPassword())) {
-            String jwtToken = tokenUtils.generateToken(user.get().getId());
-            authResponse.setAccessToken(jwtToken);
-            authResponse.setSuccess(true);
-            authResponse.setMessage("Successfully logged in");
+        if (user.isEmpty() || !passwordEncoder.matches(password, user.get().getPassword())) {
+            authResponse = new AuthResponse(false,null,"400","Username or password is wrong","Login failed");
         } else {
-            authResponse.setSuccess(false);
-            authResponse.setMessage("Wrong password");
+            String jwtToken = tokenUtils.generateToken(user.get().getId());
+            authResponse = new AuthResponse(true,jwtToken,"200","Credentials matched","Login successful");
         }
-
         return authResponse;
     }
 }
