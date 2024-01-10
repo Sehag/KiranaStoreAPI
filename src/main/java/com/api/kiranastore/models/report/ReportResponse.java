@@ -1,14 +1,16 @@
-package com.api.kiranastore.models.users;
+package com.api.kiranastore.models.report;
 
 import com.api.kiranastore.enums.HttpStatus;
 import com.api.kiranastore.response.ApiResponse;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 @Data
-public class AllUsers {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ReportResponse {
     private ApiResponse apiResponse;
 
-    public AllUsers(boolean success,Object data,int statusCode, String message, HttpStatus status){
+    public ReportResponse(boolean success,Object data,int statusCode, String message, HttpStatus status){
         ApiResponse response = new ApiResponse();
         response.setSuccess(success);
         response.setData(data);

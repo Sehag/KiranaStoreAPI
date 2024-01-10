@@ -35,7 +35,7 @@ public class UsersServiceImpl implements UsersService{
     public ApiResponse addUser(Users users) {
         users.setPassword(passwordEncoder.encode(users.getPassword()));
         usersRepo.save(users);
-        SignUpResponse signUpResponse = new SignUpResponse(true,null,"201","User created",HttpStatus.CREATED);
+        SignUpResponse signUpResponse = new SignUpResponse(true,null,201,"User created",HttpStatus.CREATED);
         return signUpResponse.getApiResponse();
     }
 
@@ -43,7 +43,7 @@ public class UsersServiceImpl implements UsersService{
     public ApiResponse signUpUser(SignupRequest signupRequest) {
         Users user = new Users();
         if( usersRepo.findByUsername(signupRequest.getUsername()).isPresent()){
-            SignUpResponse signUpResponse = new SignUpResponse(false, null, "400", "Username Taken", HttpStatus.BAD_REQUEST);
+            SignUpResponse signUpResponse = new SignUpResponse(false, null, 400, "Username Taken", HttpStatus.BAD_REQUEST);
             return signUpResponse.getApiResponse();
         } else {
             List<Roles> role = List.of(Roles.USER);
@@ -53,11 +53,11 @@ public class UsersServiceImpl implements UsersService{
             user.setRoles(role);
             String userId = usersRepo.save(user).getId();
             if(StringUtils.hasText(userId)){
-                SignUpResponse signUpResponse = new SignUpResponse(true, userId, "201", "User created",
+                SignUpResponse signUpResponse = new SignUpResponse(true, userId, 201, "User created",
                         HttpStatus.CREATED);
                 return signUpResponse.getApiResponse();
             }else{
-                SignUpResponse signUpResponse = new SignUpResponse(false, null, "429", "User couldn't be required", HttpStatus.NOT_FOUND);
+                SignUpResponse signUpResponse = new SignUpResponse(false, null, 429, "User couldn't be required", HttpStatus.NOT_FOUND);
                 return signUpResponse.getApiResponse();
             }
         }
@@ -68,9 +68,9 @@ public class UsersServiceImpl implements UsersService{
         List<Users> users = usersRepo.findAll();
         AllUsers allUsers;
         if (users.isEmpty()){
-            allUsers = new AllUsers(false,null,"400","Users could not be fetched",HttpStatus.NOT_FOUND);
+            allUsers = new AllUsers(false,null,400,"Users could not be fetched",HttpStatus.NOT_FOUND);
         } else {
-            allUsers = new AllUsers(true,users,"200","Users fetched",HttpStatus.OK);
+            allUsers = new AllUsers(true,users,200,"Users fetched",HttpStatus.OK);
         }
         return allUsers.getApiResponse();
     }
@@ -83,9 +83,9 @@ public class UsersServiceImpl implements UsersService{
         if(user.isPresent()) {
             user.get().setPassword(passwordEncoder.encode(updateDetails.getNewPassword()));
             usersRepo.save(user.get());
-            updateResponse = new UpdateResponse(true,null,"200","Password Updated",HttpStatus.OK);
+            updateResponse = new UpdateResponse(true,null,200,"Password Updated",HttpStatus.OK);
         } else {
-            updateResponse = new UpdateResponse(false,null,"400","Password Not Updated",HttpStatus.BAD_REQUEST);
+            updateResponse = new UpdateResponse(false,null,400,"Password Not Updated",HttpStatus.BAD_REQUEST);
         }
         return updateResponse.getApiResponse();
     }
@@ -98,9 +98,9 @@ public class UsersServiceImpl implements UsersService{
         if(user.isPresent()){
             user.get().setUsername(updateDetails.getNewUserName());
             usersRepo.save(user.get());
-            updateResponse = new UpdateResponse(true,null,"200","Username Updated",HttpStatus.OK);
+            updateResponse = new UpdateResponse(true,null,200,"Username Updated",HttpStatus.OK);
         } else {
-            updateResponse = new UpdateResponse(false,null,"400","Username Not Updated",HttpStatus.BAD_REQUEST);
+            updateResponse = new UpdateResponse(false,null,400,"Username Not Updated",HttpStatus.BAD_REQUEST);
         }
         return updateResponse.getApiResponse();
     }
@@ -113,9 +113,9 @@ public class UsersServiceImpl implements UsersService{
         if(user.isPresent()) {
             user.get().setCurrency(updateDetails.getCurrency());
             usersRepo.save(user.get());
-            updateResponse = new UpdateResponse(true,null,"200","Currency Updated",HttpStatus.OK);
+            updateResponse = new UpdateResponse(true,null,200,"Currency Updated",HttpStatus.OK);
         } else {
-            updateResponse = new UpdateResponse(false,null,"400","Currency Not Updated",HttpStatus.BAD_REQUEST);
+            updateResponse = new UpdateResponse(false,null,400,"Currency Not Updated",HttpStatus.BAD_REQUEST);
         }
         return updateResponse.getApiResponse();
     }

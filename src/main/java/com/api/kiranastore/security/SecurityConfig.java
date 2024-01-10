@@ -59,6 +59,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/home/**").permitAll()
                 .requestMatchers("/api/admin/**").hasAuthority(String.valueOf(Roles.ADMIN))
                 .requestMatchers("/api/user/**").hasAuthority(String.valueOf(Roles.USER))
+                .requestMatchers("/api/owner/**").hasAuthority(String.valueOf(Roles.OWNER))
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

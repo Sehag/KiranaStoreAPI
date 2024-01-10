@@ -8,7 +8,7 @@ import lombok.Data;
 public class UpdateResponse {
     private ApiResponse apiResponse;
 
-    public UpdateResponse(boolean success,Object data,String statusCode, String message, HttpStatus status){
+    public UpdateResponse(boolean success,Object data,int statusCode, String message, HttpStatus status){
         ApiResponse response = new ApiResponse();
         response.setSuccess(success);
         response.setData(data);

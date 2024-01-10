@@ -4,7 +4,9 @@ import com.api.kiranastore.enums.HttpStatus;
 import com.api.kiranastore.enums.Roles;
 import com.api.kiranastore.exception.TokenException;
 import com.api.kiranastore.response.ApiResponse;
+import com.api.kiranastore.services.apiRateLimit.RateLimitServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.bucket4j.Bucket;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -29,10 +31,12 @@ public class AuthFilter extends OncePerRequestFilter {
 
     private final TokenUtils tokenUtils;
     private final UserInfoService userInfoService;
+    private final RateLimitServiceImpl rateLimitService;
 
-    public AuthFilter(TokenUtils tokenUtils, UserInfoService userInfoService) {
+    public AuthFilter(TokenUtils tokenUtils, UserInfoService userInfoService, RateLimitServiceImpl rateLimitService) {
         this.tokenUtils = tokenUtils;
         this.userInfoService = userInfoService;
+        this.rateLimitService = rateLimitService;
     }
 
     @Override
@@ -45,25 +49,24 @@ public class AuthFilter extends OncePerRequestFilter {
                 token = authHeader.substring(7);
                 id = tokenUtils.extractUserId(token);
             } else {
-                throw new TokenException(HttpStatus.UNAUTHORIZED, "Token Not found in Header", "401");
+                throw new TokenException(HttpStatus.UNAUTHORIZED, "Token Not found in Header", 401);
             }
 
             /**
-             * TODO: Have roles in jwt.
              * TODO: pass jwt to userDetails -> In Userdetails use jwt to overirde granted authority.
              */
 
             if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserInfoDetails userInfoDetails = userInfoService.loadUserByUsername(id);
-                System.out.println("Authority running next!");
-                Collection<? extends GrantedAuthority> authorities = userInfoDetails.getAuthorities();
-                System.out.println("Authority got: " + authorities);
-
                 if (!tokenUtils.isTokenExpired(token)) {
-                    System.out.println("Token entered expiry zone1");
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userInfoDetails, null, authorities);
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    Bucket bucket = rateLimitService.resolveBucket();
+                    if (bucket.tryConsume(1)){
+                        UserInfoDetails userInfoDetails = userInfoService.loadUserByUsername(id);
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userInfoDetails, null, userInfoDetails.getAuthorities());
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    } else {
+                        throw new TokenException(HttpStatus.TOO_MANY_REQUESTS,"Wait for a while before you proceed",429);
+                    }
                 }
             }
 
@@ -71,11 +74,11 @@ public class AuthFilter extends OncePerRequestFilter {
 
         } catch(TokenException e){
             response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(401);
+            response.setStatus(e.getApiResponse().getHttpStatusCode());
             ObjectMapper objectMapper = new ObjectMapper();
             response.getWriter().write(objectMapper.writeValueAsString(e.getApiResponse()));
         } catch (JwtException e){
-            TokenException err = new TokenException(HttpStatus.UNAUTHORIZED,"Your access token has expired","401");
+            TokenException err = new TokenException(HttpStatus.UNAUTHORIZED,"Your access token has expired",401);
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(401);
             ObjectMapper objectMapper = new ObjectMapper();

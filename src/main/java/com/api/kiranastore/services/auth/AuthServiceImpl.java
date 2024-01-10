@@ -36,23 +36,25 @@ public class AuthServiceImpl implements AuthService{
         Optional<Users> user = usersRepo.findByUsername(username);
 
         if (user.isEmpty() || !passwordEncoder.matches(password, user.get().getPassword())) {
-            authResponse = new AuthResponse(false,null,"400","Username or password is wrong", HttpStatus.BAD_REQUEST);
+            authResponse = new AuthResponse(false,null,400,"Username or password is wrong", HttpStatus.BAD_REQUEST);
         } else {
-            String accessToken = tokenUtils.generateToken(user.get().getId());
+            String accessToken = tokenUtils.generateToken(user.get().getId(),user.get().getRoles());
 
             /**
              * TODO
              */
+            /*
             if (refreshTokenService.isAvailable(user.get().getId())){
 
             }
 
+             */
 
             String refreshToken = refreshTokenService.createRefreshToken(user.get().getId());
             Tokens tokens = new Tokens();
             tokens.setAccessToken(accessToken);
             tokens.setRefreshToken(refreshToken);
-            authResponse = new AuthResponse(true,tokens,"200","Credentials matched",HttpStatus.OK);
+            authResponse = new AuthResponse(true,tokens,200,"Credentials matched",HttpStatus.OK);
         }
         return authResponse.getApiResponse();
     }

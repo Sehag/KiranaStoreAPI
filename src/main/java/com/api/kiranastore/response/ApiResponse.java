@@ -15,7 +15,7 @@ public class ApiResponse {
     private Object view;
     private HttpStatus status;
     private Object message;
-    private String httpStatusCode;
+    private int httpStatusCode;
     private String displayMsg;
 
 }

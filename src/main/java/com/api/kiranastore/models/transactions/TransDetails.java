@@ -2,9 +2,11 @@ package com.api.kiranastore.models.transactions;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
-public class TransactionResponse {
+public class TransDetails {
     private String transId;
     private double transAmount;
-    private String message;
+    private LocalDateTime transTime;
 }

@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class AuthResponse {
     private ApiResponse apiResponse;
 
-    public AuthResponse(boolean success,Object data,String statusCode, String message, HttpStatus status){
+    public AuthResponse(boolean success,Object data,int statusCode, String message, HttpStatus status){
         ApiResponse response = new ApiResponse();
-        response.setSuccess(true);
+        response.setSuccess(success);
         response.setData(data);
         response.setHttpStatusCode(statusCode);
         response.setStatus(status);
