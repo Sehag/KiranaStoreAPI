@@ -44,17 +44,8 @@ public class TokenUtils {
                 .getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-    }
-
-    public Boolean validateToken(String token) {
-        final String id = extractUserId(token);
-        if (!isTokenExpired(token)){
-            return true;
-        } else {
-            throw new TokenException("Invalid token", "Token Expired", "401");
-        }
     }
 
     public String generateToken(String id) {

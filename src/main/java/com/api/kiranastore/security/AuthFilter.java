@@ -1,7 +1,10 @@
 package com.api.kiranastore.security;
 
 import com.api.kiranastore.exception.TokenException;
+import com.api.kiranastore.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +45,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
             if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userInfoService.loadUserByUsername(id);
-                if (tokenUtils.validateToken(token)) {
+                if (tokenUtils.isTokenExpired(token)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -52,14 +55,9 @@ public class AuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch(TokenException e){
-            response.setContentType("application/json;charset=UTF-8");
-            try{
-                response.setStatus(Integer.parseInt(e.getApiResponse().getStatus()));
-            }catch (Exception err){
-                response.setStatus(401);
-            }
-            ObjectMapper objectMapper = new ObjectMapper();
-            response.getWriter().write(objectMapper.writeValueAsString(e.getApiResponse()));
+            response = createResponse(response);
+        } catch (JwtException e){
+            response = createResponse(response);
         }
     }
 
@@ -67,5 +65,14 @@ public class AuthFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException{
         String path = request.getRequestURI();
         return path.equals("/api/home/login") || path.equals("/api/home/signup");
+    }
+
+    private HttpServletResponse createResponse(HttpServletResponse response) throws IOException{
+        TokenException e = new TokenException("Token expired","Your access token has expired","401");
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(401);
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(e.getApiResponse()));
+        return response;
     }
 }
