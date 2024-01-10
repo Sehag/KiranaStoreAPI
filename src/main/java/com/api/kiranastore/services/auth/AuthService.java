@@ -2,6 +2,7 @@ package com.api.kiranastore.services.auth;
 
 import com.api.kiranastore.models.auth.AuthRequest;
 import com.api.kiranastore.models.auth.AuthResponse;
+import com.api.kiranastore.response.ApiResponse;
 
 public interface AuthService {
 
@@ -10,5 +11,5 @@ public interface AuthService {
      * @param authRequest consists of username and password
      * @return JWT token on successful authentication or error message if authentication fails
      */
-    public AuthResponse authenticate(AuthRequest authRequest);
+    public ApiResponse authenticate(AuthRequest authRequest);
 }

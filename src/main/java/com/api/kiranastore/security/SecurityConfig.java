@@ -1,11 +1,11 @@
 package com.api.kiranastore.security;
 
 
+import com.api.kiranastore.enums.Roles;
 import com.api.kiranastore.repo.UsersRepo;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,8 +23,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.io.IOException;
 
 
 @Configuration
@@ -58,26 +55,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth->auth
-                        .requestMatchers("api/home/**").permitAll()
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/admin/**").hasAuthority("ADMIN")
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/user/**").hasAuthority("USER")
-                )
+                .authorizeHttpRequests()
+                .requestMatchers("/api/home/**").permitAll()
+                .requestMatchers("/api/admin/**").hasAuthority(String.valueOf(Roles.ADMIN))
+                .requestMatchers("/api/user/**").hasAuthority(String.valueOf(Roles.USER))
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint())
-                .and()
+                //.exceptionHandling()
+                //.authenticationEntryPoint(authenticationEntryPoint())
+                //.and()
                 .build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -96,9 +88,9 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    @Bean
+    /*@Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED);
-    }
+        return new HttpStatusEntryPoint(HttpStatus.GATEWAY_TIMEOUT);
+    }*/
 }
 

@@ -4,6 +4,8 @@ import com.api.kiranastore.enums.Currency;
 import com.api.kiranastore.models.signUp.SignUpResponse;
 import com.api.kiranastore.models.signUp.SignupRequest;
 import com.api.kiranastore.entities.Users;
+import com.api.kiranastore.models.users.UpdateDetails;
+import com.api.kiranastore.response.ApiResponse;
 
 
 import java.util.List;
@@ -15,38 +17,39 @@ public interface UsersService {
      * @param users new user details
      * @return status of creation of the new user
      */
-    public SignUpResponse addUser(Users users);
+    public ApiResponse addUser(Users users);
 
     /**
      * Add new user to the database
      * @param signupRequest Consists of the new user details
      * @return status of the creation of the new user
      */
-    public SignUpResponse signUpUser(SignupRequest signupRequest);
+    public ApiResponse signUpUser(SignupRequest signupRequest);
 
     /**
-     * List of all the users
+     * View all the users
      * @return all the users
      */
-    public List<Users> getAllUsers();
+    public ApiResponse getAllUsers();
 
     /**
      * Updates user's password
-     * @param newPassword New password which the user wishes to change to
+     * @param token access token
+     * @param updateDetails New password which the user wishes to change to
      */
-    public void updatePassword(String token,String newPassword);
+    public ApiResponse updatePassword(String token, UpdateDetails updateDetails);
 
     /**
      * Updates user's username
-     * @param userName Current username
-     * @param newUserName new username
+     * @param token access token
+     * @param updateDetails New username which the user wishes to change to
      */
-    public void updateUserName(String token, String newUserName);
+    public ApiResponse updateUserName(String token, UpdateDetails updateDetails);
 
     /**
      * Updates user's country
-     * @param userName username
-     * @param newCountry new country
+     * @param token access token
+     * @param updateDetails New currency which the user wishes to change to
      */
-    void updateCurrency(String token,Currency currency);
+    public ApiResponse updateCurrency(String token,UpdateDetails updateDetails);
 }

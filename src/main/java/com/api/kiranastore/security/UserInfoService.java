@@ -17,7 +17,7 @@ public class UserInfoService implements UserDetailsService {
     private final UsersRepo usersRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    public UserInfoDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         Optional<Users> userInfo = usersRepo.findById(userId);
         if (userInfo.isPresent()) {
             return new UserInfoDetails(userInfo.get());

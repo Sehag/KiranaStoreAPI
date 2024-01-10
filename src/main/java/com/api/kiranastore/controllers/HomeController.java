@@ -4,6 +4,7 @@ import com.api.kiranastore.models.auth.AuthResponse;
 import com.api.kiranastore.models.auth.AuthRequest;
 import com.api.kiranastore.models.signUp.SignUpResponse;
 import com.api.kiranastore.models.signUp.SignupRequest;
+import com.api.kiranastore.response.ApiResponse;
 import com.api.kiranastore.services.auth.AuthServiceImpl;
 import com.api.kiranastore.services.users.UsersServiceImpl;
 import io.github.bucket4j.Bandwidth;
@@ -27,16 +28,14 @@ public class HomeController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponse> addNewUser(@RequestBody SignupRequest signupRequest){
-        SignUpResponse signUpResponse = usersService.signUpUser(signupRequest);
-        return ResponseEntity.ok(signUpResponse);
+    public ResponseEntity<ApiResponse> addNewUser(@RequestBody SignupRequest signupRequest){
+        ApiResponse apiResponse = usersService.signUpUser(signupRequest);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticationAndGetToken(@RequestBody AuthRequest authRequest) {
-        AuthResponse authResponse;
-        authResponse = authService.authenticate(authRequest);
-
+    public ResponseEntity<ApiResponse> authenticationAndGetToken(@RequestBody AuthRequest authRequest) {
+        ApiResponse apiResponse = authService.authenticate(authRequest);
         /*
         Bucket bucket = rateLimitService.resolveBucket("USER");
         if (bucket.tryConsume(1)) {
@@ -48,7 +47,7 @@ public class HomeController {
 
          */
 
-        return ResponseEntity.ok(authResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 
 

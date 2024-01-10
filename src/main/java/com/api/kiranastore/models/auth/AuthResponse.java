@@ -1,5 +1,6 @@
 package com.api.kiranastore.models.auth;
 
+import com.api.kiranastore.enums.HttpStatus;
 import com.api.kiranastore.response.ApiResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class AuthResponse {
     private ApiResponse apiResponse;
 
-    public AuthResponse(boolean success,Object data,String statusCode, String message, String status){
+    public AuthResponse(boolean success,Object data,String statusCode, String message, HttpStatus status){
         ApiResponse response = new ApiResponse();
         response.setSuccess(true);
         response.setData(data);

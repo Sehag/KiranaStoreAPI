@@ -6,6 +6,7 @@ import com.api.kiranastore.repo.UsersRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,5 +27,22 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         refreshToken.setExpiryTime(Instant.now().plusSeconds(600));
         refreshRepo.save(refreshToken);
         return refreshToken.getToken();
+    }
+
+    @Override
+    public boolean isAvailable(String id) {
+        Optional<RefreshToken> refreshToken = refreshRepo.findByUserId(id);
+        if (refreshToken.isPresent()){
+            if (isExpired(refreshToken.get())){
+                refreshRepo.delete(refreshToken.get());
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isExpired(RefreshToken refreshToken) {
+        return refreshToken.getExpiryTime().isBefore(Instant.now());
     }
 }

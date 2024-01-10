@@ -1,5 +1,7 @@
 package com.api.kiranastore.security;
 
+import com.api.kiranastore.enums.HttpStatus;
+import com.api.kiranastore.enums.Roles;
 import com.api.kiranastore.exception.TokenException;
 import com.api.kiranastore.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,13 +13,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jodd.util.StringUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @Component
 public class AuthFilter extends OncePerRequestFilter {
@@ -40,13 +45,23 @@ public class AuthFilter extends OncePerRequestFilter {
                 token = authHeader.substring(7);
                 id = tokenUtils.extractUserId(token);
             } else {
-                throw new TokenException("No token", "Token Not found in Header", "401");
+                throw new TokenException(HttpStatus.UNAUTHORIZED, "Token Not found in Header", "401");
             }
 
+            /**
+             * TODO: Have roles in jwt.
+             * TODO: pass jwt to userDetails -> In Userdetails use jwt to overirde granted authority.
+             */
+
             if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userInfoService.loadUserByUsername(id);
-                if (tokenUtils.isTokenExpired(token)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UserInfoDetails userInfoDetails = userInfoService.loadUserByUsername(id);
+                System.out.println("Authority running next!");
+                Collection<? extends GrantedAuthority> authorities = userInfoDetails.getAuthorities();
+                System.out.println("Authority got: " + authorities);
+
+                if (!tokenUtils.isTokenExpired(token)) {
+                    System.out.println("Token entered expiry zone1");
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userInfoDetails, null, authorities);
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
@@ -55,9 +70,20 @@ public class AuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch(TokenException e){
-            response = createResponse(response);
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(401);
+            ObjectMapper objectMapper = new ObjectMapper();
+            response.getWriter().write(objectMapper.writeValueAsString(e.getApiResponse()));
         } catch (JwtException e){
-            response = createResponse(response);
+            TokenException err = new TokenException(HttpStatus.UNAUTHORIZED,"Your access token has expired","401");
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(401);
+            ObjectMapper objectMapper = new ObjectMapper();
+            response.getWriter().write(objectMapper.writeValueAsString(err.getApiResponse()));
+        } catch (ServletException s){
+            System.out.println("server");
+        } catch (IOException io){
+            System.out.println("io");
         }
     }
 
@@ -67,12 +93,15 @@ public class AuthFilter extends OncePerRequestFilter {
         return path.equals("/api/home/login") || path.equals("/api/home/signup");
     }
 
-    private HttpServletResponse createResponse(HttpServletResponse response) throws IOException{
-        TokenException e = new TokenException("Token expired","Your access token has expired","401");
+    /*
+    private HttpServletResponse createResponse(HttpServletResponse response,Exception e) throws IOException{
+        //TokenException e = new TokenException(HttpStatus.UNAUTHORIZED,"Your access token has expired","401");
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(401);
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(e.getApiResponse()));
         return response;
     }
+
+     */
 }

@@ -45,6 +45,11 @@ public class TokenUtils {
     }
 
     public Boolean isTokenExpired(String token) {
+        System.out.println("Time Expiry check");
+        System.out.println("exp time: " + extractExpiration(token));
+        System.out.println("Time now: " + new Date());
+        System.out.println("bool value : " + extractExpiration(token).before(new Date()));
+
         return extractExpiration(token).before(new Date());
     }
 
@@ -58,7 +63,7 @@ public class TokenUtils {
                 .setClaims(claims)
                 .setSubject(id)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) //10 mins
                 .signWith(getSignkey(), SignatureAlgorithm.HS256).compact();
     }
 
