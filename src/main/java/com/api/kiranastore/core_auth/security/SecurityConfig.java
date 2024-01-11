@@ -1,11 +1,9 @@
-package com.api.kiranastore.security;
-
+package com.api.kiranastore.core_auth.security;
 
 import com.api.kiranastore.enums.Roles;
 import com.api.kiranastore.repo.UsersRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,7 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -32,52 +29,51 @@ public class SecurityConfig {
     private final UsersRepo usersRepo;
     private final AuthFilter authFilter;
 
-    SecurityConfig(UsersRepo usersRepo, AuthFilter authFilter){
+    SecurityConfig(UsersRepo usersRepo, AuthFilter authFilter) {
         this.usersRepo = usersRepo;
         this.authFilter = authFilter;
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        /*
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin);
-
-         */
-
+    public UserDetailsService userDetailsService() {
         return new UserInfoService(usersRepo);
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests()
-                .requestMatchers("/api/home/**").permitAll()
-                .requestMatchers("/api/admin/**").hasAuthority(String.valueOf(Roles.ADMIN))
-                .requestMatchers("/api/user/**").hasAuthority(String.valueOf(Roles.USER))
-                .requestMatchers("/api/owner/**").hasAuthority(String.valueOf(Roles.OWNER))
+                .requestMatchers("/api/home/**")
+                .permitAll()
+                .requestMatchers("/api/admin/**")
+                .hasAuthority(String.valueOf(Roles.ADMIN))
+                .requestMatchers("/api/report/**")
+                .hasAuthority(String.valueOf(Roles.OWNER))
+                .requestMatchers("/api/profile/**")
+                .hasAnyAuthority(String.valueOf(Roles.USER), String.valueOf(Roles.OWNER))
+                .requestMatchers("/api/profile/update/**")
+                .hasAnyAuthority(String.valueOf(Roles.USER), String.valueOf(Roles.OWNER))
+                .requestMatchers("/api/makePayment")
+                .hasAnyAuthority(String.valueOf(Roles.USER), String.valueOf(Roles.OWNER))
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                //.exceptionHandling()
-                //.authenticationEntryPoint(authenticationEntryPoint())
-                //.and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint())
+                .and()
                 .build();
     }
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService());
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -85,13 +81,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
         return config.getAuthenticationManager();
     }
 
-    /*@Bean
+    @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new HttpStatusEntryPoint(HttpStatus.GATEWAY_TIMEOUT);
-    }*/
+        return new HttpStatusEntryPoint(HttpStatus.FORBIDDEN);
+    }
 }
-

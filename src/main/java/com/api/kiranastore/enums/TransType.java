@@ -1,6 +1,6 @@
 package com.api.kiranastore.enums;
 
-public enum TransactionType {
+public enum TransType {
     DEBIT,
     CREDIT
 }

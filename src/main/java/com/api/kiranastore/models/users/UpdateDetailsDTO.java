@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UpdateDetails {
+public class UpdateDetailsDTO {
     private String oldPassword;
     private String newPassword;
     private String newUserName;

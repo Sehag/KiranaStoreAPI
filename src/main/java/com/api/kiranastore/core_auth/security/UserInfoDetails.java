@@ -1,24 +1,24 @@
-package com.api.kiranastore.security;
+package com.api.kiranastore.core_auth.security;
 
 import com.api.kiranastore.entities.Users;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserInfoDetails implements UserDetails {
 
     private final String userId;
     private final List<GrantedAuthority> role;
 
-    UserInfoDetails(Users users){
+    UserInfoDetails(Users users) {
         this.userId = users.getId();
-        this.role = users.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.toString()))
-                .collect(Collectors.toList());
+        this.role =
+                users.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.toString()))
+                        .collect(Collectors.toList());
     }
 
     @Override

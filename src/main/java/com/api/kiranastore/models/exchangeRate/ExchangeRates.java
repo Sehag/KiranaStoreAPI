@@ -1,10 +1,9 @@
 package com.api.kiranastore.models.exchangeRate;
 
-import lombok.Data;
-
 import com.api.kiranastore.enums.Currency;
 import java.util.Map;
 import java.util.Set;
+import lombok.Data;
 
 @Data
 public class ExchangeRates {
@@ -16,17 +15,23 @@ public class ExchangeRates {
     private String base;
     private Map<String, Double> rates;
 
-    public double getExchangeRate(Currency currency){
+    /**
+     * Get exchange rate for the sender's currency
+     *
+     * @param currency sender's currency
+     * @return exchange rate
+     */
+    public double getExchangeRate(Currency currency) {
         String strCurrency = currency.toString();
         return rates.get(strCurrency);
     }
 
     /**
      * Retrieve all currencies from the 'rates' map
+     *
      * @return All the available currencies
      */
     public Set<String> getAllCurrencies() {
         return rates.keySet();
     }
 }
-

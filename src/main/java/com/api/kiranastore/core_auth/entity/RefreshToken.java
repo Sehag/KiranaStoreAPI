@@ -1,12 +1,9 @@
-package com.api.kiranastore.entities;
+package com.api.kiranastore.core_auth.entity;
 
-import lombok.Builder;
+import java.time.LocalDateTime;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Document("refreshTokens")
 @Data
@@ -16,5 +13,4 @@ public class RefreshToken {
     private String token;
     private LocalDateTime expiryTime;
     private String userId;
-
 }

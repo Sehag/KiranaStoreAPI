@@ -1,6 +1,5 @@
 package com.api.kiranastore.models.transactions;
 
-
 import lombok.Data;
 
 @Data

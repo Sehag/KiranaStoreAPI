@@ -17,5 +17,4 @@ public class ApiResponse {
     private Object message;
     private int httpStatusCode;
     private String displayMsg;
-
 }

@@ -2,11 +2,10 @@ package com.api.kiranastore.entities;
 
 import com.api.kiranastore.enums.Currency;
 import com.api.kiranastore.enums.Roles;
+import java.util.List;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 @Document("users")
 @Data
@@ -17,5 +16,4 @@ public class Users {
     private String password;
     private List<Roles> roles;
     private Currency currency;
-
 }

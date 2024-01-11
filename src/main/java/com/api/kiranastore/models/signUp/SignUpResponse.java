@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 public class SignUpResponse {
     private ApiResponse apiResponse;
 
-    public SignUpResponse(boolean success,Object data,int statusCode, String message, HttpStatus status){
+    public SignUpResponse(
+            boolean success, Object data, int statusCode, String message, HttpStatus status) {
         ApiResponse response = new ApiResponse();
         response.setSuccess(success);
         response.setData(data);

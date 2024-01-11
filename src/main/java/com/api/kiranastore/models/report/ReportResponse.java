@@ -10,7 +10,8 @@ import lombok.Data;
 public class ReportResponse {
     private ApiResponse apiResponse;
 
-    public ReportResponse(boolean success,Object data,int statusCode, String message, HttpStatus status){
+    public ReportResponse(
+            boolean success, Object data, int statusCode, String message, HttpStatus status) {
         ApiResponse response = new ApiResponse();
         response.setSuccess(success);
         response.setData(data);

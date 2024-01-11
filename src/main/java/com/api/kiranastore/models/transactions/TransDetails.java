@@ -1,8 +1,7 @@
 package com.api.kiranastore.models.transactions;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
+import lombok.Data;
 
 @Data
 public class TransDetails {
