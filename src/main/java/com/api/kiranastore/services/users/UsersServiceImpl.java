@@ -29,6 +29,12 @@ public class UsersServiceImpl implements UsersService {
         this.tokenUtils = tokenUtils;
     }
 
+    /**
+     * Add new user to the database
+     *
+     * @param users new user details
+     * @return status of creation of the new user
+     */
     @Override
     public ApiResponse addUser(Users users) {
         users.setPassword(passwordEncoder.encode(users.getPassword()));
@@ -38,6 +44,12 @@ public class UsersServiceImpl implements UsersService {
         return signUpResponse.getApiResponse();
     }
 
+    /**
+     * Add new user to the database
+     *
+     * @param signupRequest Consists of the new user details
+     * @return status of the creation of the new user
+     */
     @Override
     public ApiResponse signUpUser(SignupRequest signupRequest) {
         Users user = new Users();
@@ -69,6 +81,11 @@ public class UsersServiceImpl implements UsersService {
         }
     }
 
+    /**
+     * View all the users
+     *
+     * @return all the users
+     */
     @Override
     public ApiResponse getAllUsers() {
         List<Users> users = usersRepo.findAll();
@@ -83,6 +100,12 @@ public class UsersServiceImpl implements UsersService {
         return profileResponse.getApiResponse();
     }
 
+    /**
+     * View the current user profile
+     *
+     * @param token Access token of the user
+     * @return user profile
+     */
     @Override
     public ApiResponse viewProfile(String token) {
         String userId = tokenUtils.extractUserId(token.substring(7));
@@ -110,6 +133,12 @@ public class UsersServiceImpl implements UsersService {
         return response.getApiResponse();
     }
 
+    /**
+     * Updates user's password
+     *
+     * @param token access token
+     * @param updateDetails New password which the user wishes to change to
+     */
     @Override
     public ApiResponse updatePassword(String token, UpdateDetailsDTO updateDetails) {
         UpdateResponse updateResponse;
@@ -127,6 +156,12 @@ public class UsersServiceImpl implements UsersService {
         return updateResponse.getApiResponse();
     }
 
+    /**
+     * Updates user's username
+     *
+     * @param token access token
+     * @param updateDetails New username which the user wishes to change to
+     */
     @Override
     public ApiResponse updateUserName(String token, UpdateDetailsDTO updateDetails) {
         UpdateResponse updateResponse;
@@ -144,6 +179,12 @@ public class UsersServiceImpl implements UsersService {
         return updateResponse.getApiResponse();
     }
 
+    /**
+     * Updates user's country
+     *
+     * @param token access token
+     * @param updateDetails New currency which the user wishes to change to
+     */
     @Override
     public ApiResponse updateCurrency(String token, UpdateDetailsDTO updateDetails) {
         UpdateResponse updateResponse;
@@ -161,6 +202,12 @@ public class UsersServiceImpl implements UsersService {
         return updateResponse.getApiResponse();
     }
 
+    /**
+     * Delete the logged in user's profile
+     *
+     * @param token access token of the user
+     * @return status of deletion
+     */
     @Override
     public ApiResponse deleteProfile(String token) {
         UpdateResponse updateResponse;
