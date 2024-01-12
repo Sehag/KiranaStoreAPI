@@ -55,7 +55,7 @@ public class UsersServiceImpl implements UsersService {
         Users user = new Users();
         if (usersRepo.findByUsername(signupRequest.getUsername()).isPresent()) {
             SignUpResponse signUpResponse =
-                    new SignUpResponse(false, null, 400, "Username Taken", HttpStatus.BAD_REQUEST);
+                    new SignUpResponse(false, null, 409, "Username Taken", HttpStatus.CONFLICT);
             return signUpResponse.getApiResponse();
         } else {
             List<Roles> role = List.of(Roles.USER);

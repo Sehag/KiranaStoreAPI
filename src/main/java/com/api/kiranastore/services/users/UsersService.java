@@ -7,7 +7,6 @@ import com.api.kiranastore.response.ApiResponse;
 
 public interface UsersService {
 
-
     public ApiResponse addUser(Users users);
 
     public ApiResponse signUpUser(SignupRequest signupRequest);

@@ -50,9 +50,9 @@ public class AuthServiceImpl implements AuthService {
                     new AuthResponse(
                             false,
                             null,
-                            400,
+                            401,
                             "Username or password is wrong",
-                            HttpStatus.BAD_REQUEST);
+                            HttpStatus.UNAUTHORIZED);
         } else {
             String refreshToken = null;
             if (refreshTokenService.isAvailable(user.get().getId())) {

@@ -7,5 +7,6 @@ public enum HttpStatus {
     UNAUTHORIZED,
     FORBIDDEN,
     NOT_FOUND,
-    TOO_MANY_REQUESTS
+    TOO_MANY_REQUESTS,
+    CONFLICT
 }
