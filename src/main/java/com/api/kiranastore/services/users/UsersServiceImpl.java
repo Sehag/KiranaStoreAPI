@@ -36,11 +36,35 @@ public class UsersServiceImpl implements UsersService {
      * @return status of creation of the new user
      */
     @Override
-    public ApiResponse addUser(Users users) {
-        users.setPassword(passwordEncoder.encode(users.getPassword()));
-        usersRepo.save(users);
-        SignUpResponse signUpResponse =
-                new SignUpResponse(true, null, 201, "User created", HttpStatus.CREATED);
+    public ApiResponse addUser(SignupRequest signupRequest) {
+        SignUpResponse signUpResponse;
+        if (signupRequest.getUsername().isEmpty()) {
+            signUpResponse =
+                    new SignUpResponse(
+                            false, null, 400, "Username is missing", HttpStatus.BAD_REQUEST);
+        } else if (signupRequest.getPassword().isEmpty()) {
+            signUpResponse =
+                    new SignUpResponse(
+                            false, null, 400, "Password is missing", HttpStatus.BAD_REQUEST);
+        } else if (signupRequest.getRoles().isEmpty()) {
+            signUpResponse =
+                    new SignUpResponse(
+                            false, null, 400, "Roles are missing", HttpStatus.BAD_REQUEST);
+        } else {
+            Users users = new Users();
+            users.setUsername(signupRequest.getUsername());
+            users.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+            users.setRoles(signupRequest.getRoles());
+            users.setCurrency(signupRequest.getCurrency());
+            usersRepo.save(users);
+            signUpResponse =
+                    new SignUpResponse(
+                            true,
+                            usersRepo.findByUsername(users.getUsername()),
+                            201,
+                            "User created",
+                            HttpStatus.CREATED);
+        }
         return signUpResponse.getApiResponse();
     }
 

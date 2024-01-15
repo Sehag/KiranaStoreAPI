@@ -1,6 +1,6 @@
 package com.api.kiranastore.controllers;
 
-import com.api.kiranastore.entities.Users;
+import com.api.kiranastore.models.signUp.SignupRequest;
 import com.api.kiranastore.response.ApiResponse;
 import com.api.kiranastore.services.users.UsersServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,8 @@ public class AdminController {
      * @param user user details
      */
     @PostMapping("/createNewUser")
-    public ResponseEntity<ApiResponse> addNewUser(@RequestBody Users user) {
-        ApiResponse apiResponse = usersService.addUser(user);
+    public ResponseEntity<ApiResponse> addNewUser(@RequestBody SignupRequest signupRequest) {
+        ApiResponse apiResponse = usersService.addUser(signupRequest);
         return ResponseEntity.ok(apiResponse);
     }
 

@@ -1,5 +1,7 @@
 package com.api.kiranastore;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.api.kiranastore.enums.HttpStatus;
 import com.api.kiranastore.models.auth.AuthRequest;
 import com.api.kiranastore.models.auth.Tokens;
@@ -12,13 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginTests {
 
-    @Autowired
-    TestRestTemplate restTemplate;
+    @Autowired TestRestTemplate restTemplate;
 
     @Test
     void successfulLogin() throws JsonProcessingException {
@@ -30,7 +29,8 @@ public class LoginTests {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AuthRequest> requestEntity = new HttpEntity<>(authRequest, headers);
 
-        ResponseEntity<ApiResponse> response = restTemplate.postForEntity("/api/home/login", requestEntity,ApiResponse.class);
+        ResponseEntity<ApiResponse> response =
+                restTemplate.postForEntity("/api/home/login", requestEntity, ApiResponse.class);
 
         ApiResponse apiResponse = response.getBody();
         assert apiResponse != null;
@@ -48,7 +48,7 @@ public class LoginTests {
     }
 
     @Test
-    void loginFailed(){
+    void loginFailed() {
         AuthRequest authRequest = new AuthRequest();
         authRequest.setUsername("admindsd1");
         authRequest.setPassword("admdsin1");
@@ -57,7 +57,8 @@ public class LoginTests {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AuthRequest> requestEntity = new HttpEntity<>(authRequest, headers);
 
-        ResponseEntity<ApiResponse> response = restTemplate.postForEntity("/api/home/login", requestEntity,ApiResponse.class);
+        ResponseEntity<ApiResponse> response =
+                restTemplate.postForEntity("/api/home/login", requestEntity, ApiResponse.class);
 
         ApiResponse apiResponse = response.getBody();
 
